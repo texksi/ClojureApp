@@ -12,7 +12,18 @@
     (- hours-worked 40)
     0))
 
-(def driver
-  {:name "Marko"
-   :bus "Autobus 12"
-   :hours 38})
+(def drivers
+  [{:id 1 :name "Marko" :hours 38, :available true}
+   {:id 2 :name "Jovan" :hours 45, :available false}
+   {:id 3 :name "Ana" :hours 32, :available true}])
+
+(defn find-driver [drivers id]
+  (first (filter (fn [driver]
+                   (= (:id driver) id))
+                 drivers)))
+
+(defn available-drivers [drivers]
+  (filter :available drivers))
+
+(defn total-driver-hours [drivers]
+  (reduce + (map :hours drivers)))
