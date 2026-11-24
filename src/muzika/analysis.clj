@@ -108,3 +108,31 @@
        (group-by #(get-day-of-week (:ts %)))
        (map #(vec [(first %) (total-hours-listened (second %))]))
        (sort-by first)))
+
+(defn top-artists-by-year [data]
+  (->> data
+       (group-by #(subs (:ts %) 0 4))
+       (map #(vec [(first %) (top-10-artists (second %))]))))
+
+(defn artist-listening-by-year [data artist]
+  (->> data
+       (filter #(= artist (:master_metadata_album_artist_name %)))
+       (listens-by-year)))
+
+(defn count-skipped-songs [data]
+  (->> data
+       (filter #(true? (:skipped %)))
+       count))
+
+(defn skip-rate [data]
+  (* (/ (count-skipped-songs data)
+        (count data))
+     100.0))
+
+(defn skip-rate-by-artist [data]
+  (->> data
+       (group-by :master_metadata_album_artist_name)
+       (filter #(>= (count (second %)) 30))
+       (map #(vec [(first %) (skip-rate (second %))]))
+       (sort-by second)
+       reverse))
